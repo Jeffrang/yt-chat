@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <div className='w-screen min-h-screen bg-gradient-to-r from-rose-100 to-teal-100'>
       <div className='w-full flex items-center justify-between p-4'>
-        <h1 className='text-2xl font-bold text-gray-800'>YT Chat</h1>
+        <h1 className='text-2xl font-bold text-gray-800'>Youtube Chat</h1>
         <div className='flex items-center'>
           <UserButton showName={true}/>
         </div>
@@ -25,17 +25,17 @@ export default async function Home() {
           Enter a YouTube URL to get started.
         </p>
 
-        <div className='w-full flex items-center justify-center mt-8'>
+        <div className='w-full flex flex-col items-center justify-center mt-8'>
           <SignedIn>
-            <div className='w-full max-w-lg p-4 bg-white rounded-2xl shadow-md'>
+            <div className='w-full max-w-lg p-4 mb-8 bg-white rounded-2xl shadow-md'>
               <YTLinkInput />
             </div>
             <PreviousChats />
           </SignedIn>
           <SignedOut>
-              <Link href="" className='bg-blue-700 text-white font-bold py-2 px-4 rounded hover:bg-blue-800'>
+              <Link href="" className='bg-blue-700 text-white font-bold rounded hover:bg-blue-800'>
               <SignInButton>
-                <div className="flex items-center p-2">
+                <div className="flex items-center p-4">
                   <p>Sign In to Get started </p>
                   <LogInIcon className='w-4 h-4 ml-2' />
                 </div>

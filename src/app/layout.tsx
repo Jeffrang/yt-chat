@@ -8,7 +8,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'YT Chat',
+  title: 'Youtube Chat',
   description: 'Chat with Youtube Videos',
   icons: {
     icon: '/favicon.ico',
