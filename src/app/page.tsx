@@ -2,6 +2,7 @@ import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from 'next/link';
 import { LogInIcon } from 'lucide-react';
 import YTLinkInput from '../components/YTLinkInput';
+import PreviousChats from '../components/PreviousChats';
 
 export default async function Home() {
 
@@ -29,6 +30,7 @@ export default async function Home() {
             <div className='w-full max-w-lg p-4 bg-white rounded-2xl shadow-md'>
               <YTLinkInput />
             </div>
+            <PreviousChats />
           </SignedIn>
           <SignedOut>
               <Link href="" className='bg-blue-700 text-white font-bold py-2 px-4 rounded hover:bg-blue-800'>
