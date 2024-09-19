@@ -17,20 +17,6 @@ const YTLinkInput = () => {
     'Chat created successfully!',
   ], []);
 
-  // useEffect(() => {
-  //   const fetchUserChats = async () => {
-  //     const response = await fetch(`/api/chats`);
-  //     if (response.ok) {
-  //       const chats = await response.json();
-  //       if (chats.body.length > 0) {
-  //         router.push(`/chat/${chats.body[0].chat_id}`);
-  //       }
-  //     }
-  //   };
-
-  //   fetchUserChats();
-  // }, [router]);
-
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (loading) {
@@ -48,8 +34,17 @@ const YTLinkInput = () => {
     return () => clearInterval(interval);
   }, [loading, loadingMessages]);
 
+  const isValidYoutubeUrl = (url: string) => {
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return regex.test(url);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isValidYoutubeUrl(youtubeUrl)) {
+      setErrMsg('Please enter a valid YouTube URL');
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch('/api/create-chat', {
@@ -77,6 +72,13 @@ const YTLinkInput = () => {
     }
   };
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setYoutubeUrl(e.target.value);
+    if (errMsg) {
+      setErrMsg('');
+    }
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex items-center space-x-4">
@@ -84,7 +86,7 @@ const YTLinkInput = () => {
           type="url"
           placeholder="Enter YouTube URL"
           value={youtubeUrl}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setYoutubeUrl(e.target.value)}
+          onChange={handleInputChange}
           className="p-3 border border-gray-300 rounded w-96"
           required
         />
@@ -98,7 +100,11 @@ const YTLinkInput = () => {
           <span className="text-gray-600 font-semibold">{loadingMessages[currentMessageIndex]}</span>
         </div>
       )}
-      {errMsg && !loading && <div className="mt-4 text-gray-600 font-semibold">{errMsg}</div>}
+      {errMsg && !loading &&  (
+      <div className="mt-4 flex justify-center items-center space-x-2">
+        <div className=" text-gray-600 font-semibold">{errMsg}</div>
+      </div>
+      )}
     </div>
   );
 };
