@@ -5,7 +5,13 @@ export const chunkVectors = (vectors: number[], chunkSize: number) => {
 
 export const convertToAscii = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '');
 
-export const getVideoId = (videoUrl: string) => videoUrl.includes('youtu.be') ? videoUrl.split('/').pop()! : videoUrl.split('=')[1]!;
+export const getVideoId = (videoUrl: string) => {
+  const url = new URL(videoUrl);
+  if (url.hostname === 'youtu.be') {
+    return url.pathname.split('/').pop();
+  }
+  return url.searchParams.get('v');
+};
 
 export const truncateStringByBytes = (str: string, numBytes: number) => {
   const enc = new TextEncoder();

@@ -1,6 +1,6 @@
 # Youtube Chat
 
-This is a Youtube Chat project built with [Next.js](https://nextjs.org/). It allows users to connect and chat with their favorite YouTube videos.
+Youtube Chat allows users to connect and chat with their favorite YouTube videos.
 
 ## Tech Stack
 

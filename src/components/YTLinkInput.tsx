@@ -2,12 +2,12 @@
 
 import { useState, ChangeEvent, FormEvent, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
 
 const YTLinkInput = () => {
   const [youtubeUrl, setYoutubeUrl] = useState<string>('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState('');
   const [currentMessageIndex, setCurrentMessageIndex] = useState<number>(0);
 
   const loadingMessages = useMemo(() => [
@@ -16,20 +16,6 @@ const YTLinkInput = () => {
     'Creating chat...',
     'Chat created successfully!',
   ], []);
-
-  // useEffect(() => {
-  //   const fetchUserChats = async () => {
-  //     const response = await fetch(`/api/chats`);
-  //     if (response.ok) {
-  //       const chats = await response.json();
-  //       if (chats.body.length > 0) {
-  //         router.push(`/chat/${chats.body[0].chat_id}`);
-  //       }
-  //     }
-  //   };
-
-  //   fetchUserChats();
-  // }, [router]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -43,13 +29,22 @@ const YTLinkInput = () => {
             return prevIndex;
           }
         });
-      }, 2500);
+      }, 2000);
     }
     return () => clearInterval(interval);
   }, [loading, loadingMessages]);
 
+  const isValidYoutubeUrl = (url: string) => {
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return regex.test(url);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isValidYoutubeUrl(youtubeUrl)) {
+      setErrMsg('Please enter a valid YouTube URL');
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch('/api/create-chat', {
@@ -68,10 +63,19 @@ const YTLinkInput = () => {
       const { chatId } = data;
 
       router.push(`/chat/${chatId}`);
+      setErrMsg('');
     } catch (error) {
       console.error('Error:', error);
+      setErrMsg('Failed to create chat');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setYoutubeUrl(e.target.value);
+    if (errMsg) {
+      setErrMsg('');
     }
   };
 
@@ -82,7 +86,7 @@ const YTLinkInput = () => {
           type="url"
           placeholder="Enter YouTube URL"
           value={youtubeUrl}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setYoutubeUrl(e.target.value)}
+          onChange={handleInputChange}
           className="p-3 border border-gray-300 rounded w-96"
           required
         />
@@ -95,6 +99,11 @@ const YTLinkInput = () => {
           <div className="spinner-border border-gray-200 animate-spin inline-block w-4 h-4 border-2 rounded-full" role="status"></div>
           <span className="text-gray-600 font-semibold">{loadingMessages[currentMessageIndex]}</span>
         </div>
+      )}
+      {errMsg && !loading &&  (
+      <div className="mt-4 flex justify-center items-center space-x-2">
+        <div className=" text-gray-600 font-semibold">{errMsg}</div>
+      </div>
       )}
     </div>
   );

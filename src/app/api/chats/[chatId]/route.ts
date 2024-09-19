@@ -30,9 +30,9 @@ export async function GET(request: NextRequest, { params }: { params: { chatId: 
   } catch (error) {
     console.error('Error fetching chat:', error);
     return NextResponse.json({
-      body: 'Error fetching chat',
+      body: 'Chat not found',
     }, {
-      status: 500,
+      status: 404,
     });
   }
 }

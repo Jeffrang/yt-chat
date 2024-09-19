@@ -1,21 +1,46 @@
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
+import { auth } from '@clerk/nextjs/server';
 
-/* -----------------Globals--------------- */
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
+export function createClerkSupabaseClient() {
+  const { getToken } = auth();
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createClient(supabaseUrl, supabaseKey, {
+    global: {
+      // Get the custom Supabase token from Clerk
+      fetch: async (url, options = {}) => {
+        const clerkToken = await getToken({
+          template: 'supabase',
+        })
+
+        // Insert the Clerk Supabase token into the headers
+        const headers = new Headers(options?.headers)
+        headers.set('Authorization', `Bearer ${clerkToken}`)
+
+        // Now call the default fetch
+        return fetch(url, {
+          ...options,
+          headers,
+        })
+      },
+    }
+  });
 }
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function getChatsByUserId(userId: string) {
   if (!userId) {
     throw new Error('User ID is required');
   }
 
+  const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
     .select('*')
@@ -34,6 +59,7 @@ export async function getChatById(chatId: string, userId: string) {
     throw new Error('Chat ID and user ID are required');
   }
 
+  const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
     .select('*')
@@ -53,6 +79,7 @@ export async function getChatBySlug(slug: string, userId: string) {
     throw new Error('Chat ID and user ID are required');
   }
 
+  const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
     .select('*')
@@ -74,6 +101,7 @@ export async function createChat(userId: string, videoDetails: any) {
 
   const { name, slug, url } = videoDetails;
 
+  const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
     .insert({
@@ -105,7 +133,7 @@ export async function updateChat(chatId: string, userId: string, chatHistory: an
   if (!chatHistory) {
     throw new Error('Chat history is required');
   }
-
+  const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
     .update({
