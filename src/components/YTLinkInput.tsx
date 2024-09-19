@@ -2,12 +2,12 @@
 
 import { useState, ChangeEvent, FormEvent, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
 
 const YTLinkInput = () => {
   const [youtubeUrl, setYoutubeUrl] = useState<string>('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState('');
   const [currentMessageIndex, setCurrentMessageIndex] = useState<number>(0);
 
   const loadingMessages = useMemo(() => [
@@ -43,7 +43,7 @@ const YTLinkInput = () => {
             return prevIndex;
           }
         });
-      }, 2500);
+      }, 1500);
     }
     return () => clearInterval(interval);
   }, [loading, loadingMessages]);
@@ -68,8 +68,10 @@ const YTLinkInput = () => {
       const { chatId } = data;
 
       router.push(`/chat/${chatId}`);
+      setErrMsg('');
     } catch (error) {
       console.error('Error:', error);
+      setErrMsg('Failed to create chat');
     } finally {
       setLoading(false);
     }
@@ -96,6 +98,7 @@ const YTLinkInput = () => {
           <span className="text-gray-600 font-semibold">{loadingMessages[currentMessageIndex]}</span>
         </div>
       )}
+      {errMsg && !loading && <div className="mt-4 text-gray-600 font-semibold">{errMsg}</div>}
     </div>
   );
 };
