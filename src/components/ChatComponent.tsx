@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useChat } from 'ai/react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import MessageSection from './MessagesContainer';
 import InputSection from './InputSection';
 
@@ -16,6 +16,7 @@ type ChatData = {
 
 const ChatComponent: React.FC = () => {
   const chatId = useParams().chatId as string;
+  const router = useRouter();
 
   const [isShiftPressed, setIsShiftPressed] = useState(false);
 
@@ -30,10 +31,21 @@ const ChatComponent: React.FC = () => {
 
   useEffect(() => {
     fetch(`/api/chats/${chatId}`)
-      .then(response => response.json())
-      .then(data => setChatData(data.body))
+      .then(response => {
+        console.log('response', response);
+        if (response.status === 404) {
+          router.push('/error/404');
+          return null;
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data) {
+          setChatData(data.body);
+        }
+      })
       .catch(() => setChatData(null));
-  }, [chatId]);
+  }, [chatId, router]);
 
   const handlePlaceholderClick = (text: string) => {
     handleInputChange({ target: { value: text } } as React.ChangeEvent<HTMLTextAreaElement>);
