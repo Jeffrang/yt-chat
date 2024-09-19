@@ -37,7 +37,7 @@ const YTLinkInput = () => {
             return prevIndex;
           }
         });
-      }, 2500);
+      }, 2000);
     }
     return () => clearInterval(interval);
   }, [loading, loadingMessages]);
