@@ -14,41 +14,49 @@ import { YoutubeTranscript } from 'youtube-transcript';
 import YoutubeMetadata from 'youtube-meta-data';
 import { getVideoId } from '@/lib/utils';
 
-
 export async function POST(request: NextRequest) {
-  const user = await currentUser();
-  if (!user) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({
+        body: 'Unauthorized',
+      }, {
+        status: 401,
+      });
+    }
+    const userId = user.id;
+    const reqBuffer = await buffer(request.body);
+    const reqBody = await reqBuffer.toString();
+    const { videoUrl } = JSON.parse(reqBody);
+    const metadata = await YoutubeMetadata(videoUrl);
+
+    const videoDeatails = {
+      name: metadata.title,
+      slug: getVideoId(videoUrl),
+      url: videoUrl,
+    };
+
+    const transcript = await YoutubeTranscript.fetchTranscript(videoUrl);
+    const chat = await createChat(userId, videoDeatails);
+    if (!chat) {
+      return NextResponse.json({
+        body: 'Error creating chat',
+      }, {
+        status: 500,
+      });
+    }
+
+    console.log('chat', chat);
+    await loadTranscriptIntoVectorDB(videoUrl, transcript, chat.chat_id);
     return NextResponse.json({
-      body: 'Unauthorized',
-    }, {
-      status: 401,
+      chatId: chat.chat_id,
     });
-  }
-  const userId = user.id;
-  const reqBuffer = await buffer(request.body);
-  const reqBody = await reqBuffer.toString();
-  const { videoUrl } = JSON.parse(reqBody);
-  const metadata = await YoutubeMetadata(videoUrl);
-
-  const videoDeatails = {
-    name: metadata.title,
-    slug: getVideoId(videoUrl),
-    url: videoUrl,
-  };
-
-  const chat = await createChat(userId, videoDeatails);
-  if (!chat) {
+  } catch (error) {
+    console.error('Error processing POST request:', error);
     return NextResponse.json({
-      body: 'Error creating chat',
+      body: 'Internal Server Error',
     }, {
       status: 500,
     });
   }
-
-  console.log('chat', chat);
-  const transcript = await YoutubeTranscript.fetchTranscript(videoUrl);
-  await loadTranscriptIntoVectorDB(videoUrl, transcript, chat.chat_id);
-  return NextResponse.json({
-    chatId: chat.chat_id,
-  });
 }
