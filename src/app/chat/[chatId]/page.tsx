@@ -15,7 +15,10 @@ const ChatPage = () => {
           </div>
           <div className='bg-white flex-1 flex flex-col'>
             <div className='p-4 bg-transparent text-gray-800 flex justify-between items-center'>
-              <h1 className='ml-2 text-2xl font-bold'>Youtube Chat</h1>
+              <div className='flex items-center'>
+                <img src='/icon.png' alt='Icon' className='w-6 h-6 mr-2' />
+                <h1 className='text-xl font-bold text-gray-800'>Youtube Chat</h1>
+              </div>
               <div className='action-menu'>
                 <UserButton />
               </div>

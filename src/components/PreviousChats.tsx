@@ -34,9 +34,9 @@ const PreviousChats: React.FC = () => {
   return (
     <div>
       {chats.length > 0 && (
-        <a href="#" onClick={handleNavigateToLatestChat} className=" text-blue-600 underline">
-          Access your Previous Chats -&gt;
-        </a>
+        <button onClick={handleNavigateToLatestChat} className="px-4 py-2 bg-gray-900 text-white rounded">
+          Go To My Chats -&gt;
+        </button>
       )}
     </div>
   );
