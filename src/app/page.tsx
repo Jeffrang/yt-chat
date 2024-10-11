@@ -9,7 +9,10 @@ export default async function Home() {
   return (
     <div className='w-screen min-h-screen bg-gradient-to-r from-rose-100 to-teal-100'>
       <div className='w-full flex items-center justify-between p-4'>
-        <h1 className='text-2xl font-bold text-gray-800'>Youtube Chat</h1>
+        <div className='flex items-center'>
+          <img src='/icon.png' alt='Icon' className='w-6 h-6 mr-2' />
+          <h1 className='text-2xl font-bold text-gray-800'>Youtube Chat</h1>
+        </div>
         <div className='flex items-center'>
           <UserButton showName={true}/>
         </div>
@@ -19,21 +22,22 @@ export default async function Home() {
           Chat with Youtube
         </h1>
         <p className='mt-8 text-xl text-center text-gray-600'>
-          Connect and chat with your favorite YouTube videos.
+          Connect and chat with your favorite Youtube videos.
         </p>
         <p className='mt-3 text-xl text-center text-gray-600 mb-12'>
-          Enter a YouTube URL to get started.
+          Search or enter a Youtube link to get started.
         </p>
 
         <div className='w-full flex flex-col items-center justify-center mt-8'>
-          <SignedIn>
+
             <div className='w-full max-w-lg p-4 mb-8 bg-white rounded-2xl shadow-md'>
               <YTLinkInput />
             </div>
+          <SignedIn>
             <PreviousChats />
           </SignedIn>
-          <SignedOut>
-              <Link href="" className='bg-blue-700 text-white font-bold rounded hover:bg-blue-800'>
+            <SignedOut>
+            <Link href="" className='bg-gray-900 text-white font-bold rounded hover:bg-gray-800'>
               <SignInButton>
                 <div className="flex items-center p-4">
                   <p>Sign In to Get started </p>
@@ -43,6 +47,10 @@ export default async function Home() {
             </Link>
           </SignedOut>
         </div>
+      </div>
+      <div className="absolute bottom-8 w-full text-center text-gray-500">
+        Youtube chat works best with English language videos. <br />
+        If chat creation fails, please try again later or with a different video.
       </div>
     </div>
   )

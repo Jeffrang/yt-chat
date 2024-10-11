@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { Message } from '@ai-sdk/ui-utils';
 import YouTube from 'react-youtube';
-import { User, Bot } from 'lucide-react';
+import MessageItem from '@/components/MessageItem';
 
 interface MessageSectionProps {
   messages: Message[];
@@ -33,7 +31,7 @@ const MessageSection: React.FC<MessageSectionProps> = ({ chatData, messages, pla
 
   return (
     <div className="mx-auto w-full overflow-y-scroll" style={{ maxHeight: 'calc(100vh - 230px)' }}>
-      <div className='flex justify-center h-72 max-w-lg w-full mx-auto rounded-md mb-4'>
+      <div className='flex justify-center h-72 max-w-lg w-full mx-auto rounded-md mt-4 mb-4'>
         {chatData && (
           <YouTube
             iframeClassName="yt-chat-player"
@@ -54,39 +52,8 @@ const MessageSection: React.FC<MessageSectionProps> = ({ chatData, messages, pla
       </div>
       <div className="flex flex-col flex-1 justify-center mx-auto max-w-2xl">
         {messages.length > 0 ? (
-          messages.map((m) => (
-            <div className={`flex items-start ${m.role === 'user'
-                  ? 'self-end text-right'
-                  : 'self-start text-left'
-                  } relative`} key={m.id} >
-              {m.role === 'user' ? (
-                <>
-                  <div
-                    className={`flex items-start whitespace-pre-wrap p-4 rounded-2xl mb-4 max-w-2xl bg-gray-100 self-end text-right`}
-                    style={{ alignSelf: 'flex-end' }}
-                  >
-                    <div>{m.content}</div>
-                  </div>
-                  <div className="absolute top-0 right-[-60px] mt-2 mr-2 p-2 rounded-full bg-white border border-gray-300">
-                    <User />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="absolute top-0 left-[-60px] mt-2 ml-2 p-2 rounded-full bg-white border border-gray-300">
-                    <Bot />
-                  </div>
-                  <div
-                    className={`flex items-start whitespace-pre-wrap p-4 rounded-2xl mb-4 max-w-2xl bg-gradient-to-r from-rose-100 to-teal-100 self-start text-left`}
-                    style={{ alignSelf: 'flex-start' }}
-                  >
-                    <div>
-                      <Markdown remarkPlugins={[remarkGfm]}>{m.content}</Markdown>
-                    </div>
-                  </div>
-                </>
-              )}
-          </div>
+          messages.map((msg) => (
+            <MessageItem message={msg} key={msg.id} />
           ))
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-4 max-w-lg mx-auto place-items-center">

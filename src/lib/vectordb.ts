@@ -98,3 +98,11 @@ export const getContext = async (text: string, chatId: string) => {
   const docs = qualifiedMatches.map((match: any) => (match.metadata.text));
   return docs.join('\n').substring(0, 3000);
 };
+
+export const deleteEmbeddingsById = async (chatId: string) => {
+  const pineconeClient = await pineconeInit();
+  const index = pineconeClient.index('yt-chat');
+  const id = convertToAscii(chatId);
+  const namespace = index.namespace(`yt-${id}`);
+  await namespace.deleteAll();
+};

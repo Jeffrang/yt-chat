@@ -1,18 +1,26 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent, useEffect, useMemo } from 'react';
+import { useState, ChangeEvent, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser, RedirectToSignIn } from '@clerk/nextjs';
+import Image from 'next/image';
 
 const YTLinkInput = () => {
-  const [youtubeUrl, setYoutubeUrl] = useState<string>('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState('');
+  const [searchString, setSearchString] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState<number>(0);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [showSignInDialog, setShowSignInDialog] = useState(false);
+
+  const { isSignedIn } = useUser();
 
   const loadingMessages = useMemo(() => [
     'Fetching youtube video info...',
-    'Processing video transcripts...',
+    'Analyzing video content...',
+    'Processing transcripts...',
     'Creating chat...',
     'Chat created successfully!',
   ], []);
@@ -29,7 +37,7 @@ const YTLinkInput = () => {
             return prevIndex;
           }
         });
-      }, 2000);
+      }, 2500);
     }
     return () => clearInterval(interval);
   }, [loading, loadingMessages]);
@@ -39,12 +47,19 @@ const YTLinkInput = () => {
     return regex.test(url);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!isValidYoutubeUrl(youtubeUrl)) {
-      setErrMsg('Please enter a valid YouTube URL');
-      return;
-    }
+  let debounceTimeout: NodeJS.Timeout;
+
+  const handleDebouncedSearch = (query: string) => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+      const results = await fetch(`/api/search?query=${query}`);
+      const data = await results.json();
+      console.log(data);
+      setSearchResults(data.items);
+    }, 500);
+  };
+
+  const handleSubmit = async (result: any) => {
     setLoading(true);
     try {
       const response = await fetch('/api/create-chat', {
@@ -52,7 +67,7 @@ const YTLinkInput = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ videoUrl: youtubeUrl }),
+        body: JSON.stringify({ videoUrl: `https://www.youtube.com/watch?v=${result.id}` }),
       });
 
       if (!response.ok) {
@@ -72,27 +87,38 @@ const YTLinkInput = () => {
     }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setYoutubeUrl(e.target.value);
+  const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchString(e.target.value);
+    handleDebouncedSearch(e.target.value);
     if (errMsg) {
       setErrMsg('');
     }
   };
+
+  const handleItemClick = async (result: any) => {
+    if (!isSignedIn) {
+      setShowSignInDialog(true);
+      return;
+    } else {
+      setSearchResults([]);
+      setSearchString(result.title);
+      setInputDisabled(true);
+      handleSubmit(result);
+    }
+  }
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex items-center space-x-4">
         <input
           type="url"
-          placeholder="Enter YouTube URL"
-          value={youtubeUrl}
+          placeholder="Search for a YouTube video"
+          value={searchString}
           onChange={handleInputChange}
-          className="p-3 border border-gray-300 rounded w-96"
+          className="p-3 border border-gray-300 rounded max-w-lg w-full"
           required
+          disabled={inputDisabled}
         />
-        <button type="submit" className="px-4 py-2 bg-gray-900 text-white rounded">
-          Start
-        </button>
       </form>
       {loading && (
         <div className="mt-4 flex justify-center items-center space-x-2">
@@ -100,10 +126,33 @@ const YTLinkInput = () => {
           <span className="text-gray-600 font-semibold">{loadingMessages[currentMessageIndex]}</span>
         </div>
       )}
-      {errMsg && !loading &&  (
-      <div className="mt-4 flex justify-center items-center space-x-2">
-        <div className=" text-gray-600 font-semibold">{errMsg}</div>
-      </div>
+      {errMsg && !loading && (
+        <div className="mt-4 flex justify-center items-center space-x-2">
+          <div className="text-gray-600 font-semibold">{errMsg}</div>
+        </div>
+      )}
+      {showSignInDialog && (
+        <RedirectToSignIn />
+      )}
+      {searchResults.length > 0 && (
+        <ul className="absolute mt-1 border border-gray-300 rounded-2xl max-w-lg bg-white z-10 max-h-80 overflow-y-auto shadow-lg w-full transform translate-x-[-15px] translate-y-[12px]">
+          {searchResults.map((result: any) => (
+            <li
+              key={result.id}
+              onClick={() => handleItemClick(result)}
+              className="ml-2 mt-2 mb-2 px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-4 rounded-2xl transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              <Image
+                src={`https://img.youtube.com/vi/${result.id}/default.jpg`}
+                width={64}
+                height={64}
+                alt={result.title}
+                className="w-16 h-9 rounded-md"
+              />
+              <span className="text-gray-800 font-semibold">{result.title}</span>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

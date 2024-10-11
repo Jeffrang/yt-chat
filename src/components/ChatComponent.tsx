@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useChat } from 'ai/react';
 import { useParams, useRouter } from 'next/navigation';
-import MessageSection from './MessagesContainer';
-import InputSection from './InputSection';
+import MessageSection from '@/components/MessagesContainer';
+import InputSection from '@/components/InputSection';
 
 type ChatData = {
   id: string;
