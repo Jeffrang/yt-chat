@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     console.log('yt search results ', results);
     return NextResponse.json(results);
   }
-  const results = await YoutubeSearch.GetListByKeyword(query, false, 5);
+  const results = await YoutubeSearch.GetListByKeyword(query, false, 10);
   console.log('yt search results ', results);
   return NextResponse.json(results);
 }

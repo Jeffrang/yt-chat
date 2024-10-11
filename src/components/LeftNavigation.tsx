@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import YTLinkInput from './YTLinkInput';
 import { UserProfile, useUser } from '@clerk/nextjs';
-import { Settings } from 'lucide-react';
+import { Settings, Trash2 } from 'lucide-react';
 
 type Chat = {
   id: string;
@@ -40,14 +40,27 @@ const LeftNavigation = () => {
     fetchChats();
   }, []);
 
-const handleNavigation = (chatId: string) => {
-  router.push(`/chat/${chatId}`);
-};
+  const handleNavigation = (chatId: string) => {
+    router.push(`/chat/${chatId}`);
+  };
 
+  const handleDeleteChat = async (chatId: string) => {
+    try {
+      const response = await fetch(`/api/chats/${chatId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete chat');
+      }
+      setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  };
 
   return (
     <div className="rounded-lg flex flex-col h-full justify-between w-full mx-auto">
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
         <div className="flex justify-between items-center p-4 rounded-t-lg">
           <h2 className="text-xl font-bold">Chats</h2>
           <button
@@ -57,7 +70,7 @@ const handleNavigation = (chatId: string) => {
             New Chat
           </button>
         </div>
-        <ul className="mt-8 list-none p-0 m-0">
+        <ul className="mt-4 list-none p-0 m-0 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 160px)' }}>
           {chats.length === 0 ? (
             <div>
               <div className="animate-pulse flex space-x-4">
@@ -72,11 +85,24 @@ const handleNavigation = (chatId: string) => {
             chats.map(chat => (
               <li
                 key={chat.id}
-                className="px-3 py-2 m-1 bg-transparent rounded cursor-pointer transition-colors duration-300 hover:bg-gray-300 whitespace-nowrap overflow-hidden text-ellipsis"
-                onClick={() => handleNavigation(chat.id)}
+                className="relative px-3 py-2 m-1 bg-transparent rounded cursor-pointer transition-colors duration-300 hover:bg-gray-300 whitespace-nowrap overflow-hidden text-ellipsis flex items-center"
               >
-                <span className="mr-2">&#128172;</span>
-                {chat.title}
+                <div onClick={() => handleNavigation(chat.id)} className="flex items-center flex-grow overflow-hidden text-ellipsis">
+                  <span className="mr-2">&#128172;</span>
+                  <span className="overflow-hidden text-ellipsis relative">
+                    <span className="relative fade-text" style={{ display: 'inline-block', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ display: 'inline-block', background: 'linear-gradient(to right, black, transparent)', WebkitBackgroundClip: 'text', color: 'transparent' }}>
+                        {chat.title}
+                      </span>
+                    </span>
+                  </span>
+                  <span className="w-8 h-4 gradient-fade-in-left">
+                    <Trash2
+                      className="w-5 h-4 text-red-300 cursor-pointer hover:text-red-600 ml-2 absolute right-1 top-3 opacity-0 hover:opacity-100"
+                      onClick={() => handleDeleteChat(chat.id)}
+                    />
+                  </span>
+                </div>
               </li>
             ))
           )}
@@ -97,8 +123,8 @@ const handleNavigation = (chatId: string) => {
         <div className="flex flex-col h-full justify-between w-full mx-auto">
           <div className="flex flex-col h-full justify-between w-full mx-auto">
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50" onClick={() => setNewChat(false)}>
-              <div className="p-6 bg-white shadow-lg rounded-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-                <h2 className="text-xl font-bold mb-4">Start a New Chat</h2>
+              <div className="p-4 bg-white shadow-lg rounded-2xl max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-xl font-bold mt-1 mb-4">Start a New Chat</h2>
                 <YTLinkInput />
               </div>
             </div>

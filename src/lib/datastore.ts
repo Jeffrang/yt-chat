@@ -149,3 +149,26 @@ export async function updateChat(chatId: string, userId: string, chatHistory: an
 
   return data;
 }
+
+export async function deleteChatById(chatId: string, userId: string) {
+  if (!chatId || !userId) {
+    throw new Error('Chat ID and user ID are required');
+  }
+
+  const supabase = createClerkSupabaseClient();
+  const { data, error } = await supabase
+    .from('chats')
+    .delete()
+    .eq('chat_id', chatId)
+    .eq('user_id', userId);
+
+
+  console.log('data', data, error);
+
+  if (error) {
+    console.error('Error deleting chat:', error);
+    throw error;
+  }
+
+  return data;
+}
