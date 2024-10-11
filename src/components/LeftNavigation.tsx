@@ -52,7 +52,15 @@ const LeftNavigation = () => {
       if (!response.ok) {
         throw new Error('Failed to delete chat');
       }
-      setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+      setChats((prevChats) => {
+        const updatedChats = prevChats.filter((chat) => chat.id !== chatId);
+        if (updatedChats.length > 0) {
+          router.push(`/chat/${updatedChats[0].id}`);
+        } else {
+          router.push('/');
+        }
+        return updatedChats;
+      });
     } catch (error) {
       console.error('Error deleting chat:', error);
     }
@@ -96,12 +104,12 @@ const LeftNavigation = () => {
                       </span>
                     </span>
                   </span>
-                  {/* <span className="w-8 h-4 gradient-fade-in-left">
+                  <span className="w-8 h-4 gradient-fade-in-left">
                     <Trash2
                       className="w-5 h-4 text-red-300 cursor-pointer hover:text-red-600 ml-2 absolute right-1 top-3 opacity-0 hover:opacity-100"
                       onClick={() => handleDeleteChat(chat.id)}
                     />
-                  </span> */}
+                  </span>
                 </div>
               </li>
             ))

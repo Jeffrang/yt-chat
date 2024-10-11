@@ -37,7 +37,7 @@ export default async function Home() {
             <PreviousChats />
           </SignedIn>
             <SignedOut>
-            <Link href="" className='bg-blue-700 text-white font-bold rounded hover:bg-blue-800'>
+            <Link href="" className='bg-gray-900 text-white font-bold rounded hover:bg-gray-800'>
               <SignInButton>
                 <div className="flex items-center p-4">
                   <p>Sign In to Get started </p>

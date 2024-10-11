@@ -19,7 +19,8 @@ const YTLinkInput = () => {
 
   const loadingMessages = useMemo(() => [
     'Fetching youtube video info...',
-    'Processing video transcripts...',
+    'Analyzing video content...',
+    'Processing transcripts...',
     'Creating chat...',
     'Chat created successfully!',
   ], []);
