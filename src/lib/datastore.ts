@@ -154,7 +154,6 @@ export async function deleteChatById(chatId: string, userId: string) {
   if (!chatId || !userId) {
     throw new Error('Chat ID and user ID are required');
   }
-
   const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')
