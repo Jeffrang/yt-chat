@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { LogInIcon } from 'lucide-react';
 import YTLinkInput from '../components/YTLinkInput';
 import PreviousChats from '../components/PreviousChats';
+import Image from 'next/image';
 
 export default async function Home() {
 
@@ -10,7 +11,7 @@ export default async function Home() {
     <div className='w-screen min-h-screen bg-gradient-to-r from-rose-100 to-teal-100'>
       <div className='w-full flex items-center justify-between p-4'>
         <div className='flex items-center'>
-          <img src='/icon.png' alt='Icon' className='w-6 h-6 mr-2' />
+          <Image src='/icon.png' alt='Icon' width={24} height={24} className='mr-2' />
           <h1 className='text-2xl font-bold text-gray-800'>Youtube Chat</h1>
         </div>
         <div className='flex items-center'>
@@ -37,13 +38,14 @@ export default async function Home() {
             <PreviousChats />
           </SignedIn>
             <SignedOut>
-            <Link href="" className='bg-gray-900 text-white font-bold rounded hover:bg-gray-800'>
-              <SignInButton>
-                <div className="flex items-center p-4">
-                  <p>Sign In to Get started </p>
-                  <LogInIcon className='w-4 h-4 ml-2' />
-                </div>
-              </SignInButton>
+            <Link
+              href="/auth/login"
+              className='bg-gray-900 text-white font-bold rounded hover:bg-gray-800'
+            >
+              <div className="flex items-center p-4">
+                <p>Sign In to Get started </p>
+                <LogInIcon className='w-4 h-4 ml-2' />
+              </div>
             </Link>
           </SignedOut>
         </div>
