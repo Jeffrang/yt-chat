@@ -1,10 +1,14 @@
-import { google } from '@ai-sdk/google';
 import { streamText, convertToCoreMessages } from 'ai';
 import { getContext } from '@/lib/vectordb';
 import { SYSTEM_PROMPT } from '@/lib/constants';
 import { updateChat } from '@/lib/datastore';
 import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from "next/server";
+import { createTogetherAI } from '@ai-sdk/togetherai';
+
+const togetherai = createTogetherAI({
+  apiKey: process.env.TOGETHER_AI_API_KEY ?? '',
+});
 
 export async function POST(req: Request) {
   const user = await currentUser();
@@ -21,11 +25,11 @@ export async function POST(req: Request) {
   const context = await getContext(lastMessage.content, chatId);
   let systemPrompt = SYSTEM_PROMPT.replace('{{videoContext}}', context);
   const result = await streamText({
-    model: google('gemini-1.5-flash'),
+    model: togetherai('meta-llama/Llama-3.3-70B-Instruct-Turbo-Free'),
     system: systemPrompt,
+    maxTokens: 1000,
     messages: convertToCoreMessages(messages),
     onFinish: async(result) => {
-      console.log('onFinish result', result);
       const updatedMessages = [
         ...messages,
         {
