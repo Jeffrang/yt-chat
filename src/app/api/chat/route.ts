@@ -25,6 +25,7 @@ export async function POST(req: Request) {
   const context = await getContext(lastMessage.content, chatId);
   let systemPrompt = SYSTEM_PROMPT.replace('{{videoContext}}', context);
   const result = await streamText({
+    // @ts-ignore
     model: togetherai('meta-llama/Llama-3.3-70B-Instruct-Turbo-Free'),
     system: systemPrompt,
     maxTokens: 1000,
