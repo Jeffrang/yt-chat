@@ -25,7 +25,7 @@ const MessageSection: React.FC<MessageSectionProps> = ({ chatData, messages, pla
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      // messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 

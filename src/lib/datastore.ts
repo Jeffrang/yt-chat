@@ -138,9 +138,11 @@ export async function updateChat(chatId: string, userId: string, chatHistory: an
     .from('chats')
     .update({
       message_history: chatHistory,
+      updated_at: new Date().toISOString(),
     })
     .eq('chat_id', chatId)
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .select();
 
   if (error) {
     console.error('Error updating chat:', error);
@@ -154,7 +156,6 @@ export async function deleteChatById(chatId: string, userId: string) {
   if (!chatId || !userId) {
     throw new Error('Chat ID and user ID are required');
   }
-
   const supabase = createClerkSupabaseClient();
   const { data, error } = await supabase
     .from('chats')

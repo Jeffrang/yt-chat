@@ -16,7 +16,6 @@ const YTLinkInput = () => {
   const [showSignInDialog, setShowSignInDialog] = useState(false);
 
   const { isSignedIn } = useUser();
-
   const loadingMessages = useMemo(() => [
     'Fetching youtube video info...',
     'Analyzing video content...',
