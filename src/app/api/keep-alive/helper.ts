@@ -1,7 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { keepAliveConfig as config } from '@/config/keep-alive-config'
 
-
 export type QueryResponse = {
   successful: boolean
   message: string
@@ -10,7 +9,6 @@ export type QueryResponse = {
 export type QueryResponseWithData = QueryResponse & {
   data: any[] | null
 }
-
 
 const defaultRandomStringLength: number = 12
 
