@@ -1,7 +1,7 @@
-import { clerkMiddleware, AuthObject } from '@clerk/nextjs/server';
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest } from 'next/server';
 
-export default clerkMiddleware(async (auth: AuthObject, req: NextRequest) => {
+export default clerkMiddleware(async (auth: any, req: NextRequest) => {
   if (req.nextUrl.pathname === '/api/alive') return;
 
   await auth.protect();
