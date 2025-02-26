@@ -1,4 +1,4 @@
-import { createClerkSupabaseClient } from '@/lib/datastore';
+import { createPublicSupabaseClient } from '@/lib/datastore';
 import { SupabaseClient } from '@supabase/supabase-js'
 
 import { keepAliveConfig as config } from '@/config/keep-alive-config';
@@ -49,7 +49,9 @@ const fetchOtherEndpoints = async (): Promise<string[]> => {
 }
 
 export async function GET() {
-  const supabase = createClerkSupabaseClient();  // maybe switch to ClientSide Client
+  console.log('Keep Alive API called');
+
+  const supabase = createPublicSupabaseClient();  // maybe switch to ClientSide Client
 
   let responseMessage: string = ''
   let successfulResponses: boolean = true

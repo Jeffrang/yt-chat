@@ -2,6 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import { auth } from '@clerk/nextjs/server';
 
+export function createPublicSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export function createClerkSupabaseClient() {
   const { getToken } = auth();
