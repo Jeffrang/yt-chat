@@ -1,16 +1,11 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse, NextRequest } from 'next/server';
+import { clerkMiddleware, AuthObject } from '@clerk/nextjs/server';
+import { NextRequest } from 'next/server';
 
-// Create custom middleware
-export default function middleware(req: NextRequest) {
-  // Skip auth for /api/keep-alive
-  if (req.nextUrl.pathname === '/api/keep-alive') {
-    return NextResponse.next()
-  }
+export default clerkMiddleware(async (auth: AuthObject, req: NextRequest) => {
+  if (req.nextUrl.pathname === '/api/alive') return;
 
-  // Apply clerk auth for all other routes
-  return clerkMiddleware(req)
-}
+  await auth.protect();
+});
 
 export const config = {
   matcher: [
